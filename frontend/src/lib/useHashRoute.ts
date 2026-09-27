@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 
-export type Route = 'landing' | 'client' | 'banque' | 'demo';
+export type Route = 'landing' | 'client' | 'banque';
 
 const parse = (): Route => {
   const h = window.location.hash.replace(/^#\/?/, '').split('?')[0];
-  return h === 'client' || h === 'banque' || h === 'demo' ? h : 'landing';
+  return h === 'client' || h === 'banque' ? h : 'landing';
 };
 
 /** Routage par hash : suffisant pour une démo, aucun serveur à configurer. */

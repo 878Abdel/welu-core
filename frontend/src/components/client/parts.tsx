@@ -1,8 +1,5 @@
-import { motion } from 'framer-motion';
 import { useEffect, useState, type ReactNode } from 'react';
-import type { Transaction } from '../../data/types';
-import { clock, number } from '../../lib/format';
-import { ease } from '../../motion/easings';
+import { clock } from '../../lib/format';
 
 export function StatusBar() {
   const [now, setNow] = useState(clock);
@@ -46,48 +43,6 @@ export function Avatar({ name, size = 38 }: { name: string; size?: number }) {
     >
       {initials}
     </span>
-  );
-}
-
-/** Marqueur discret d'une valeur simulée. */
-export function Sim({ light = false }: { light?: boolean }) {
-  return (
-    <span className={`ml-1 text-[9px] font-medium tracking-[0.08em] uppercase ${light ? 'text-white/60' : 'text-faint'}`} title="Valeur simulée">
-      sim.
-    </span>
-  );
-}
-
-export function TxRow({ t, index = 0 }: { t: Transaction; index?: number }) {
-  const out = t.amount < 0;
-  const sub = out ? 'Paiement' : t.channel === 'cash' ? (t.certified ? 'Cash · confirmé par QR' : 'Cash') : 'Mobile money';
-  return (
-    <motion.li
-      layout="position"
-      className="grid grid-cols-[34px_1fr_auto] items-center gap-2.5 border-b border-line py-2.5 last:border-b-0"
-      initial={{ opacity: 0, y: -8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.26, ease: ease.settle, delay: index * 0.04 }}
-    >
-      <span className={`grid size-[34px] place-items-center rounded-[10px] border border-line ${out ? 'bg-surface' : 'bg-tint'}`} aria-hidden>
-        <svg width="14" height="14" viewBox="0 0 14 14">
-          {out ? (
-            <path d="M3 7h8" stroke="var(--color-faint)" strokeWidth="1.8" strokeLinecap="round" />
-          ) : (
-            <path d="M3 7h8M7 3v8" stroke="var(--color-violet-strong)" strokeWidth="1.8" strokeLinecap="round" />
-          )}
-        </svg>
-      </span>
-      <span className="min-w-0">
-        <span className="block truncate text-[12.5px] font-medium">{t.label}</span>
-        <span className="text-[10.5px] text-muted">{sub}</span>
-      </span>
-      <span className={`text-right text-[12.5px] font-semibold ${out ? 'text-muted' : ''}`}>
-        {out ? '−' : '+'}
-        {number(Math.abs(t.amount))}
-        <span className="block text-[10px] font-normal text-muted">{t.time}</span>
-      </span>
-    </motion.li>
   );
 }
 

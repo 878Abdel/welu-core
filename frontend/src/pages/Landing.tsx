@@ -1,10 +1,13 @@
 import { motion } from 'framer-motion';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { ClientScreens } from '../components/client/ClientScreens';
+import { MerchantScreens } from '../components/client/MerchantScreens';
+import { Logo } from '../components/ui/Logo';
 import { IPhoneFrame } from '../components/ui/IPhoneFrame';
 import { go } from '../lib/useHashRoute';
 import { ease } from '../motion/easings';
-import { useClient } from '../state/useClient';
+import { useMerchant } from '../state/useMerchant';
+import { useProfiles } from '../state/useProfiles';
+import type { ApiProfile } from '../services/api';
 import BankConsole from './BankConsole';
 
 const BROWSER_W = 520;
@@ -28,14 +31,13 @@ export default function Landing() {
         side="client"
         className="bg-bg bg-[radial-gradient(700px_420px_at_50%_100%,var(--color-tint)_0%,transparent_70%)] text-ink"
         top={
-          <span className="flex items-center gap-2.5 text-[16px] font-bold">
-            <span className="grid size-7 place-items-center rounded-lg bg-violet-strong text-[13px] text-white">W</span>
-            Wëlu
-            <small className="ml-1 text-[12.5px] font-normal text-muted max-sm:hidden">Rendre visible ce que la banque ne voit pas</small>
+          <span className="flex items-center gap-3">
+            <Logo size={30} />
+            <small className="text-[12.5px] text-muted max-sm:hidden">Rendre visible ce que la banque ne voit pas</small>
           </span>
         }
         eyebrow="Espace client · application mobile"
-        text="Score, QR, conseils de Kia et prêts, pour les professionnels comme pour les particuliers."
+        text="Business ou particulier : score IA en direct, encaissement cash certifié par QR, reçu WhatsApp et Kia, assistante vocale en wolof."
         href="#/client"
         cta="Ouvrir l’app"
         k="1"
@@ -51,7 +53,7 @@ export default function Landing() {
         className="pointer-events-none absolute top-1/2 left-1/2 z-10 grid size-16 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-bg shadow-[0_0_0_6px_rgba(255,255,255,.35),0_12px_30px_-8px_rgba(76,60,196,.5)] max-lg:hidden"
         aria-hidden
       >
-        <span className="grid size-11 place-items-center rounded-full bg-violet-strong text-[18px] font-bold text-white">W</span>
+        <Logo size={30} word={false} />
       </div>
 
       {/* ── Moitié banque : violet ── */}
@@ -59,12 +61,10 @@ export default function Landing() {
         side="bank"
         className="bg-violet-strong bg-[radial-gradient(700px_420px_at_50%_100%,var(--color-violet-deep)_0%,transparent_70%)] text-white"
         top={
-          <a href="#/demo" className="ml-auto text-[12px] text-white/75 hover:text-white">
-            Vue démo : les deux côtés →
-          </a>
+          <span className="ml-auto text-[12px] font-semibold text-white/80">Propulsé par NVIDIA L40S</span>
         }
         eyebrow="Espace banque · console web"
-        text="Clients probables, solvabilité, demandes de prêt et alertes de fraude."
+        text="Clients proposés audités sur GPU : score, décomposition SHAP, télémétrie NVIDIA et alertes collusion."
         href="#/banque"
         cta="Ouvrir la console"
         k="2"
@@ -101,7 +101,9 @@ function Half(props: {
           <p className={`mt-2 text-[14px] leading-normal ${bank ? 'text-white/85' : 'text-muted'}`}>{props.text}</p>
         </div>
         <div className="rounded-[26px] transition-transform duration-300 ease-[cubic-bezier(.16,1,.3,1)] group-hover:-translate-y-1.5 group-focus-visible:outline-2 group-focus-visible:outline-offset-8 group-focus-visible:outline-current motion-reduce:transition-none motion-reduce:group-hover:translate-y-0">
-          {props.device}
+          <div className="pointer-events-none" inert aria-hidden>
+            {props.device}
+          </div>
         </div>
         <span
           className={`inline-flex h-11 items-center gap-2 rounded-xl px-5 text-[14px] font-semibold transition-colors ${
@@ -112,24 +114,29 @@ function Half(props: {
           <kbd className={`rounded border px-1 font-sans text-[10px] ${bank ? 'border-violet-deep/30' : 'border-white/40'}`}>{props.k}</kbd>
         </span>
       </motion.a>
-      <footer className={`text-center text-[11px] ${bank ? 'text-white/60' : 'text-faint'}`}>Démo · profils et données simulés</footer>
+      <footer className={`text-center text-[11px] ${bank ? 'text-white/60' : 'text-faint'}`}>Scores calculés en direct par le moteur Wëlu</footer>
     </section>
   );
 }
 
 /** Aperçu vivant de l'app client (non interactif). */
 function PhonePreview() {
-  const api = useClient('awa');
-  const W = 232;
+  const { profiles } = useProfiles();
+  const W = 210;
   const S = W / 340;
   return (
     <IPhoneFrame width={W} frameless="never">
       {/* L'app est rendue à sa taille réelle puis réduite : l'aperçu est l'app elle-même. */}
       <div className="absolute top-0 left-0 flex flex-col" style={{ width: 314, height: 685, transform: `scale(${S})`, transformOrigin: '0 0' }}>
-        <ClientScreens api={api} preview />
+        {profiles?.[0] ? <PreviewSession profile={profiles[0]} /> : null}
       </div>
     </IPhoneFrame>
   );
+}
+
+function PreviewSession({ profile }: { profile: ApiProfile }) {
+  const m = useMerchant(profile);
+  return <MerchantScreens m={m} onLogout={() => {}} />;
 }
 
 /** Aperçu vivant de la console banque dans une fenêtre de navigateur. */
