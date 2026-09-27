@@ -1,0 +1,83 @@
+@import "tailwindcss";
+@import "@fontsource/inter/400.css";
+@import "@fontsource/inter/500.css";
+@import "@fontsource/inter/600.css";
+@import "@fontsource/inter/700.css";
+
+/* Charte Wëlu : blanc et violet clair. Le violet porte le positif, le rouge est réservé à la fraude. */
+@theme {
+  --color-bg: #ffffff;
+  --color-surface: #faf9fe;
+  --color-tint: #f3f0ff;
+  --color-tint-2: #e8e2ff;
+  --color-line: #ece9f5;
+  --color-ink: #1b1530;
+  --color-muted: #6f6a85;
+  --color-faint: #a6a1b8;
+  --color-violet: #a594f9;
+  --color-violet-strong: #6c5ce7;
+  --color-violet-deep: #4b3cc4;
+  --color-alert: #e5484d;
+  --color-alert-tint: #fdecec;
+  --color-lavender: #d9d1f5;
+
+  /* Jauge d'éligibilité : rouge (effort à fournir), jaune (presque), vert (apte). */
+  --color-ok: #1f9d6b;
+  --color-ok-tint: #e6f6ef;
+  --color-warn: #e3a008;
+  --color-warn-tint: #fdf3dc;
+
+  /* Alias utilisés par la vue démo côte à côte. */
+  --color-fg: #1b1530;
+  --color-panel: #faf9fe;
+  --color-dim: #c9c4d8;
+
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+:root {
+  --ease-settle: cubic-bezier(0.16, 1, 0.3, 1);
+  color-scheme: light;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  /* Chiffres tabulaires partout : les compteurs animés ne tremblent pas. */
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1, "cv11" 1;
+  -webkit-font-smoothing: antialiased;
+}
+
+@utility eyebrow {
+  font-size: 10.5px;
+  line-height: 14px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+@utility tick {
+  transition: opacity 90ms var(--ease-settle);
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-violet-strong);
+  outline-offset: 3px;
+}

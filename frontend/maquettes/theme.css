@@ -1,0 +1,86 @@
+/* Charte Wëlu — blanc et violet clair. Partagée par les trois maquettes. */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+:root {
+  --bg: #ffffff;
+  --surface: #faf9fe;
+  --tint: #f3f0ff;
+  --tint-2: #e8e2ff;
+  --line: #ece9f5;
+  --ink: #1b1530;
+  --muted: #6f6a85;
+  --faint: #a6a1b8;
+  --violet: #a594f9;         /* violet clair : remplissages, graduations */
+  --violet-strong: #6c5ce7;  /* violet lisible : texte, boutons (contraste AA sur blanc) */
+  --violet-deep: #4b3cc4;
+  --alert: #e5484d;
+  --alert-tint: #fdecec;
+  --lavender: #d9d1f5;       /* coloris « Lavande » de l'iPhone 17 */
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --shadow: 0 1px 2px rgba(27, 21, 48, 0.04), 0 8px 24px -12px rgba(27, 21, 48, 0.12);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { min-height: 100%; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: Inter, system-ui, sans-serif;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1, "cv11" 1;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; border: 0; background: none; cursor: pointer; }
+
+.eyebrow { font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.muted { color: var(--muted); }
+.faint { color: var(--faint); }
+.violet { color: var(--violet-strong); }
+.alert { color: var(--alert); }
+
+.card { background: var(--bg); border: 1px solid var(--line); border-radius: 16px; }
+.card.tint { background: var(--tint); border-color: transparent; }
+
+.chip { display: inline-flex; align-items: center; gap: 5px; height: 22px; padding: 0 8px; border-radius: 999px;
+  background: var(--tint); color: var(--violet-deep); font-size: 11px; font-weight: 500; white-space: nowrap; }
+.chip.neutral { background: var(--surface); color: var(--muted); border: 1px solid var(--line); }
+.chip.alert { background: var(--alert-tint); color: var(--alert); }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 38px; padding: 0 16px;
+  border-radius: 12px; font-size: 13px; font-weight: 600; white-space: nowrap; transition: transform 160ms var(--ease), background 160ms var(--ease); }
+.btn.primary { background: var(--violet-strong); color: #fff; }
+.btn.primary:hover { background: var(--violet-deep); }
+.btn.soft { background: var(--tint); color: var(--violet-deep); }
+.btn.ghost { border: 1px solid var(--line); color: var(--ink); }
+.btn:active { transform: scale(.97); }
+
+/* Marqueur discret des valeurs simulées */
+.sim { font-size: 9px; letter-spacing: .08em; text-transform: uppercase; color: var(--faint); margin-left: 4px; font-weight: 500; }
+
+.mock-note { position: fixed; right: 16px; bottom: 16px; font-size: 10px; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--faint); border: 1px dashed var(--faint); padding: 4px 8px; border-radius: 4px; background: var(--bg); z-index: 10; }
+
+/* ── iPhone 17 (lavande) ───────────────────────── */
+.iphone { position: relative; width: 340px; height: 711px; /* 71,5 × 149,6 mm */ border-radius: 62px; background: var(--lavender);
+  padding: 3px; box-shadow: 0 0 0 1px #cbc1ee, 0 40px 80px -30px rgba(76, 60, 196, .35); flex-shrink: 0; }
+.iphone .bezel { height: 100%; border-radius: 59px; background: #0d0b14; padding: 10px; }
+.iphone .screen { position: relative; height: 100%; border-radius: 50px; background: var(--bg); overflow: hidden;
+  display: flex; flex-direction: column; }
+.iphone .island { position: absolute; top: 11px; left: 50%; transform: translateX(-50%); width: 104px; height: 30px;
+  border-radius: 20px; background: #000; z-index: 5; }
+.iphone .sidebtn { position: absolute; width: 3px; background: #c6bbeb; border-radius: 2px; }
+.iphone .sidebtn.a { left: -3px; top: 120px; height: 28px; }
+.iphone .sidebtn.b { left: -3px; top: 168px; height: 52px; }
+.iphone .sidebtn.c { left: -3px; top: 232px; height: 52px; }
+.iphone .sidebtn.d { right: -3px; top: 190px; height: 80px; }
+.iphone .sidebtn.e { right: -3px; top: 390px; height: 44px; }
+.iphone .homebar { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 120px; height: 5px;
+  border-radius: 3px; background: var(--ink); opacity: .85; z-index: 5; }
+.statusbar { display: flex; justify-content: space-between; align-items: center; padding: 17px 30px 0; height: 50px;
+  font-size: 13px; font-weight: 600; flex-shrink: 0; }
+.statusbar .icons { display: flex; gap: 5px; align-items: center; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}

@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Wëlu — Maquette console banque</title>
+<link rel="stylesheet" href="theme.css" />
+<style>
+  body { background: var(--surface); }
+  .app { display: grid; grid-template-columns: 224px 1fr; min-height: 100vh; }
+
+  /* Barre latérale */
+  aside { background: var(--bg); border-right: 1px solid var(--line); padding: 20px 14px; display: flex; flex-direction: column; gap: 22px; position: sticky; top: 0; height: 100vh; }
+  .logo { display: flex; align-items: center; gap: 10px; padding: 0 8px; }
+  .logo .mk { width: 30px; height: 30px; border-radius: 9px; background: var(--violet-strong); color: #fff; display: grid; place-items: center; font-weight: 700; }
+  .logo b { font-size: 15px; } .logo span { display: block; font-size: 11px; color: var(--muted); }
+  nav { display: flex; flex-direction: column; gap: 2px; }
+  nav a { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 10px; font-size: 13px; color: var(--muted); font-weight: 500; }
+  nav a:hover { background: var(--surface); color: var(--ink); }
+  nav a.on { background: var(--tint); color: var(--violet-deep); }
+  nav a .n { margin-left: auto; font-size: 10.5px; background: var(--alert); color: #fff; border-radius: 999px; padding: 1px 6px; }
+  nav .sep { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--faint); padding: 14px 10px 6px; font-weight: 600; }
+  .me { margin-top: auto; display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid var(--line); border-radius: 12px; }
+  .me .av { width: 30px; height: 30px; border-radius: 50%; background: var(--tint); color: var(--violet-deep); display: grid; place-items: center; font-size: 11px; font-weight: 600; }
+  .me b { font-size: 12.5px; display: block; } .me span { font-size: 11px; color: var(--muted); }
+
+  main { padding: 22px 26px 30px; min-width: 0; }
+  .head { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
+  .head h1 { font-size: 22px; font-weight: 600; letter-spacing: -.02em; }
+  .head p { font-size: 13px; color: var(--muted); margin-top: 3px; }
+  .tools { display: flex; gap: 8px; align-items: center; }
+  .search { display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px; width: 240px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); font-size: 12.5px; color: var(--faint); }
+  .filter { height: 36px; display: inline-flex; align-items: center; gap: 6px; padding: 0 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); font-size: 12.5px; color: var(--ink); }
+  .filter.on { background: var(--tint); border-color: transparent; color: var(--violet-deep); font-weight: 500; }
+
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 18px; }
+  .kpi { padding: 14px 16px; }
+  .kpi p { font-size: 12px; color: var(--muted); }
+  .kpi b { display: block; font-size: 24px; font-weight: 600; letter-spacing: -.02em; margin-top: 6px; }
+  .kpi small { font-size: 11.5px; color: var(--muted); }
+  .kpi.hl { background: var(--violet-strong); border-color: transparent; color: #fff; }
+  .kpi.hl p, .kpi.hl small { color: rgba(255,255,255,.75); }
+  .kpi.hl .sim { color: rgba(255,255,255,.6); }
+
+  .grid { display: grid; grid-template-columns: minmax(0, 1fr) 356px; gap: 14px; margin-top: 14px; align-items: start; }
+
+  /* Tableau des prospects */
+  .table { overflow: hidden; }
+  .table .th, .row { display: grid; grid-template-columns: minmax(150px, 1.2fr) 96px minmax(160px, 1.5fr) 136px 108px; gap: 12px; align-items: center; padding: 0 16px; }
+  .table .th { height: 38px; font-size: 11px; color: var(--muted); font-weight: 500; border-bottom: 1px solid var(--line); background: var(--surface); }
+  .row { min-height: 60px; border-bottom: 1px solid var(--line); cursor: pointer; transition: background 140ms var(--ease); }
+  .row:last-child { border-bottom: 0; }
+  .row:hover { background: var(--surface); }
+  .row.sel { background: var(--tint); box-shadow: inset 3px 0 0 var(--violet-strong); }
+  .who b { display: block; font-size: 13px; font-weight: 600; }
+  .who span { font-size: 11.5px; color: var(--muted); }
+  .sc { display: flex; align-items: center; gap: 8px; }
+  .sc b { font-size: 15px; font-weight: 600; width: 22px; }
+  .bar { flex: 1; height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
+  .bar i { display: block; height: 100%; border-radius: 3px; background: var(--violet); }
+  .chips { display: flex; gap: 5px; flex-wrap: wrap; }
+  .solv b { display: block; font-size: 12.5px; font-weight: 600; }
+  .solv span { font-size: 11px; color: var(--muted); }
+  .amt b { display: block; font-size: 13px; font-weight: 600; }
+  .amt span { font-size: 11px; font-weight: 500; }
+  .status { justify-self: start; }
+  .status.ok { background: var(--tint); color: var(--violet-deep); }
+  .status.wait { background: var(--surface); color: var(--muted); border: 1px solid var(--line); }
+  .tfoot { display: flex; justify-content: space-between; padding: 10px 16px; font-size: 11.5px; color: var(--muted); border-top: 1px solid var(--line); background: var(--surface); }
+
+  /* Dossier sélectionné */
+  .detail { padding: 18px; position: sticky; top: 16px; }
+  .dh { display: flex; align-items: center; gap: 12px; }
+  .dh .av { width: 40px; height: 40px; border-radius: 12px; background: var(--tint); color: var(--violet-deep); display: grid; place-items: center; font-weight: 600; }
+  .dh b { font-size: 15px; font-weight: 600; display: block; } .dh span { font-size: 11.5px; color: var(--muted); }
+  .dscore { display: grid; grid-template-columns: 112px 1fr; gap: 14px; align-items: center; margin-top: 16px; padding: 12px; border-radius: 14px; background: var(--surface); }
+  .dial { position: relative; width: 112px; height: 112px; }
+  .dial svg { position: absolute; inset: 0; }
+  .dial .v { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .dial .v b { font-size: 30px; font-weight: 600; letter-spacing: -.03em; line-height: 1; }
+  .dial .v span { font-size: 10px; color: var(--muted); margin-top: 3px; }
+  .dscore p { font-size: 12px; color: var(--muted); line-height: 1.45; margin-top: 6px; }
+  .h3 { font-size: 12.5px; font-weight: 600; margin: 18px 0 8px; display: flex; justify-content: space-between; align-items: baseline; }
+  .contrib { display: grid; grid-template-columns: 1fr 72px 34px; gap: 10px; align-items: center; padding: 5px 0; }
+  .contrib b { font-size: 12px; font-weight: 500; display: block; }
+  .contrib span { font-size: 10.5px; color: var(--muted); }
+  .contrib .pts { text-align: right; font-size: 12.5px; font-weight: 600; color: var(--violet-deep); }
+  .money { display: grid; grid-template-columns: 1fr auto; row-gap: 6px; font-size: 12.5px; }
+  .money dt { color: var(--muted); } .money dd { text-align: right; font-weight: 500; }
+  .money .tot { border-top: 1px solid var(--line); padding-top: 6px; font-weight: 600; color: var(--ink); }
+  .gauge { margin-top: 12px; }
+  .gauge .track { position: relative; height: 10px; border-radius: 5px; background: var(--line); }
+  .gauge .cap { position: absolute; inset: 0 auto 0 0; border-radius: 5px; background: var(--tint-2); }
+  .gauge .use { position: absolute; inset: 0 auto 0 0; border-radius: 5px; background: var(--violet-strong); }
+  .gauge .legend { display: flex; justify-content: space-between; margin-top: 6px; font-size: 11px; color: var(--muted); }
+  .flowcheck { margin-top: 14px; display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border-radius: 12px; background: var(--surface); font-size: 12px; line-height: 1.45; }
+  .flowcheck.bad { background: var(--alert-tint); color: var(--alert); }
+  .offer { margin-top: 16px; display: flex; gap: 8px; }
+  .offer .btn { flex: 1; }
+  .btn[disabled] { opacity: .45; pointer-events: none; }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside>
+    <div class="logo"><span class="mk">W</span><div><b>Wëlu</b><span>Console crédit</span></div></div>
+    <nav>
+      <a href="#"><svg width="16" height="16" viewBox="0 0 16 16"><rect x="2" y="2" width="5" height="5" rx="1.2" fill="currentColor"/><rect x="9" y="2" width="5" height="5" rx="1.2" fill="currentColor" opacity=".5"/><rect x="2" y="9" width="5" height="5" rx="1.2" fill="currentColor" opacity=".5"/><rect x="9" y="9" width="5" height="5" rx="1.2" fill="currentColor" opacity=".5"/></svg>Vue d’ensemble</a>
+      <a href="#" class="on"><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="6" cy="5" r="2.6" fill="currentColor"/><path d="M1.5 13c.8-2.6 2.4-3.8 4.5-3.8s3.7 1.2 4.5 3.8" fill="currentColor"/><path d="M11 4.5h4M13 2.5v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Clients probables</a>
+      <a href="#"><svg width="16" height="16" viewBox="0 0 16 16"><rect x="3" y="1.5" width="10" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M5.5 5.5h5M5.5 8.5h5M5.5 11.5h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Dossiers</a>
+      <a href="#"><svg width="16" height="16" viewBox="0 0 16 16"><path d="M8 1.5l6.5 12h-13z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M8 6v3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Alertes fraude<span class="n" id="nAlerts">1</span></a>
+      <span class="sep">Rapports</span>
+      <a href="#"><svg width="16" height="16" viewBox="0 0 16 16"><path d="M2 14V8M6 14V4M10 14V9M14 14V2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Portefeuille</a>
+      <a href="#"><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="2.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Paramètres</a>
+    </nav>
+    <a class="me" href="landing.html" title="Retour à l’accueil"><span class="av">AC</span><div><b>Analyste crédit</b><span>Banque partenaire</span></div></a>
+  </aside>
+
+  <main>
+    <div class="head">
+      <div>
+        <h1>Clients probables</h1>
+        <p>Commerçants dont l’activité justifie une offre de crédit, classés par score.</p>
+      </div>
+      <div class="tools">
+        <span class="search"><svg width="14" height="14" viewBox="0 0 14 14"><circle cx="6" cy="6" r="4.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M9.5 9.5L13 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Rechercher un commerçant</span>
+        <span class="filter on">Dakar</span>
+        <span class="filter">Toutes activités ▾</span>
+        <span class="filter">Score ≥ 65 ▾</span>
+      </div>
+    </div>
+
+    <section class="kpis" id="kpis"></section>
+
+    <div class="grid">
+      <section class="card table">
+        <div class="th"><span>Commerçant</span><span>Score</span><span>Ce qui en fait un bon profil</span><span>Solvabilité</span><span>Prêt recommandé</span></div>
+        <div id="rows"></div>
+        <div class="tfoot"><span>Solvabilité : marge nette ≥ 20 % très solvable, ≥ 13 % solvable · capacité = 40 % du revenu net · prêt sur 6 mois</span><span>Profils fictifs<span class="sim">sim.</span></span></div>
+      </section>
+      <section class="card detail" id="detail"></section>
+    </div>
+  </main>
+</div>
+<span class="mock-note" style="right:auto;left:16px;bottom:96px">Maquette statique · données simulées</span>
+
+<script type="module">
+import { drawDial } from './ui.js';
+
+// ── Données simulées ─────────────────────────────────────────
+const LABELS = { geo: 'Ancrage géographique', momo: 'Flux mobile money', elec: 'Recharges d’électricité', cash: 'Ventes cash certifiées' };
+const P = [
+  { id: 'awa', name: 'Awa Diop', trade: 'Tissus', area: 'Sandaga', dossier: 'SN-DKR-0412', score: 91, rev: 1900000, chg: 1430000,
+    strengths: ['Flux réguliers · 14 mois', 'Ancrage 6 ans', 'Électricité régulière'],
+    c: { geo: [17, 'Même emplacement depuis 6 ans'], momo: [34, '≈ 1,9 M FCFA / mois'], elec: [21, '13 recharges sur 14 mois'], cash: [19, '212 ventes certifiées'] },
+    charges: [['Achats fournisseurs', 1220000], ['Tontine', 200000], ['Électricité', 10000]] },
+  { id: 'mamadou', name: 'Mamadou Fall', trade: 'Quincaillerie', area: 'Thiaroye', dossier: 'SN-DKR-0377', score: 86, rev: 2600000, chg: 2050000,
+    strengths: ['Ventes certifiées', 'Fournisseurs stables'],
+    c: { geo: [15, 'Même emplacement depuis 4 ans'], momo: [30, '≈ 2,6 M FCFA / mois'], elec: [18, '12 recharges sur 14 mois'], cash: [23, '340 ventes certifiées'] },
+    charges: [['Achats fournisseurs', 1900000], ['Loyer', 120000], ['Électricité', 30000]] },
+  { id: 'moussa', name: 'Moussa Ndiaye', trade: 'Grossiste alimentaire', area: 'Colobane', dossier: 'SN-DKR-0588', score: 84, rev: 3400000, chg: 2900000, fraud: 29,
+    strengths: ['Volume élevé'],
+    c: { geo: [12, 'Même emplacement depuis 3 ans'], momo: [41, '≈ 3,4 M FCFA / 30 j'], elec: [14, '9 recharges sur 14 mois'], cash: [17, '164 ventes certifiées'] },
+    charges: [['Achats fournisseurs', 700000], ['Sorties vers comptes A et B', 2700000]] },
+  { id: 'aminata', name: 'Aminata Sarr', trade: 'Restauration', area: 'Médina', dossier: 'SN-DKR-0291', score: 84, rev: 1200000, chg: 880000,
+    strengths: ['Clientèle fidèle', 'Électricité régulière'],
+    c: { geo: [14, 'Même emplacement depuis 5 ans'], momo: [26, '≈ 1,2 M FCFA / mois'], elec: [24, '14 recharges sur 14 mois'], cash: [20, '410 ventes certifiées'] },
+    charges: [['Achats marché', 760000], ['Gaz et électricité', 70000], ['Aide cuisine', 50000]] },
+  { id: 'ibrahima', name: 'Ibrahima Sow', trade: 'Téléphonie', area: 'Petersen', dossier: 'SN-DKR-0456', score: 79, rev: 3100000, chg: 2760000,
+    strengths: ['Volume mobile money élevé', 'Ventes certifiées'],
+    c: { geo: [10, 'Même emplacement depuis 2 ans'], momo: [36, '≈ 3,1 M FCFA / mois'], elec: [15, '10 recharges sur 14 mois'], cash: [18, '150 ventes certifiées'] },
+    charges: [['Stock téléphones', 2600000], ['Loyer', 150000], ['Électricité', 10000]] },
+  { id: 'khady', name: 'Khady Faye', trade: 'Cosmétiques', area: 'HLM', dossier: 'SN-DKR-0503', score: 76, rev: 900000, chg: 640000,
+    strengths: ['Ancrage 9 ans'],
+    c: { geo: [22, 'Même emplacement depuis 9 ans'], momo: [22, '≈ 0,9 M FCFA / mois'], elec: [16, '11 recharges sur 14 mois'], cash: [16, '180 ventes certifiées'] },
+    charges: [['Achats produits', 600000], ['Électricité', 40000]] },
+  { id: 'ousmane', name: 'Ousmane Ba', trade: 'Menuiserie', area: 'Pikine', dossier: 'SN-DKR-0612', score: 71, rev: 1500000, chg: 1290000,
+    strengths: ['Commandes certifiées'],
+    c: { geo: [16, 'Même atelier depuis 7 ans'], momo: [20, '≈ 1,5 M FCFA / mois'], elec: [13, 'Recharges irrégulières'], cash: [22, '60 commandes certifiées'] },
+    charges: [['Bois et quincaillerie', 1100000], ['Apprentis', 150000], ['Électricité', 40000]] },
+  { id: 'seynabou', name: 'Seynabou Diallo', trade: 'Poissonnerie', area: 'Soumbédioune', dossier: 'SN-DKR-0640', score: 68, rev: 1100000, chg: 950000,
+    strengths: ['Activité quotidienne'],
+    c: { geo: [13, 'Même étal depuis 3 ans'], momo: [18, '≈ 1,1 M FCFA / mois'], elec: [17, '12 recharges sur 14 mois'], cash: [20, '520 ventes certifiées'] },
+    charges: [['Achats au débarquement', 900000], ['Glace', 50000]] },
+];
+
+// ── Règles de solvabilité (affichées en pied de tableau) ────
+const MONTHS = 6, RATE = 0.05;
+const fmt = (n) => new Intl.NumberFormat('fr-FR').format(Math.round(n));
+function solvency(p) {
+  const net = p.rev - p.chg;
+  const capacity = net * 0.4;
+  const loan = Math.floor((capacity * 0.7 * MONTHS) / 50000) * 50000;
+  const monthly = (loan * (1 + RATE)) / MONTHS;
+  const effort = monthly / net;
+  const margin = net / p.rev;
+  const label = margin >= 0.2 ? 'Très solvable' : margin >= 0.13 ? 'Solvable' : 'Fragile';
+  const status = p.fraud ? 'Gelé' : p.score < 70 ? 'À consolider' : label === 'Fragile' ? 'À examiner' : 'Éligible';
+  return { net, capacity, margin, loan: p.fraud ? 0 : loan, monthly, effort, label, status };
+}
+const rows = P.map((p) => ({ ...p, s: solvency(p) }));
+
+// ── Indicateurs : calculés sur la liste affichée ─────────────
+const elig = rows.filter((r) => r.s.status === 'Éligible');
+const avg = elig.reduce((a, r) => a + r.score, 0) / elig.length;
+const total = elig.reduce((a, r) => a + r.s.loan, 0);
+document.getElementById('kpis').innerHTML = `
+  <div class="card kpi"><p>Prospects analysés</p><b>${rows.length}</b><small>commerçants à Dakar</small></div>
+  <div class="card kpi"><p>Éligibles à une offre</p><b>${elig.length}</b><small>score ≥ 70, solvable, sans alerte</small></div>
+  <div class="card kpi"><p>Score moyen des éligibles</p><b>${Math.round(avg)}</b><small>sur 100</small></div>
+  <div class="card kpi hl"><p>Montant finançable</p><b>${fmt(total)} FCFA</b><small>somme des prêts recommandés<span class="sim">sim.</span></small></div>`;
+document.getElementById('nAlerts').textContent = rows.filter((r) => r.fraud).length;
+
+// ── Tableau ─────────────────────────────────────────────────
+const STATUS = { 'Gelé': 'alert', 'Éligible': 'violet', 'À examiner': 'muted', 'À consolider': 'muted' };
+let selected = 'awa';
+function renderRows() {
+  document.getElementById('rows').innerHTML = rows.map((r) => `
+    <div class="row ${r.id === selected ? 'sel' : ''}" data-id="${r.id}" role="button" tabindex="0">
+      <div class="who"><b>${r.name}</b><span>${r.trade} · ${r.area}</span></div>
+      <div class="sc"><b class="${r.fraud ? 'alert' : ''}">${r.score}</b><span class="bar"><i style="width:${r.score}%;${r.fraud ? 'background:var(--alert)' : ''}"></i></span></div>
+      <div class="chips">${r.fraud ? '<span class="chip alert">Flux circulaires détectés</span>'
+        : r.strengths.slice(0, 2).map((t) => `<span class="chip">${t}</span>`).join('') + (r.strengths.length > 2 ? `<span class="chip neutral">+${r.strengths.length - 2}</span>` : '')}</div>
+      <div class="solv">${r.fraud ? '<b class="alert">Non évaluable</b><span>revenus gonflés</span>'
+        : `<b class="${r.s.label === 'Fragile' ? 'muted' : ''}">${r.s.label}</b><span>marge nette ${Math.round(r.s.margin * 100)} %</span>`}</div>
+      <div class="amt"><b>${r.s.loan ? fmt(r.s.loan) : '—'}</b><span class="${STATUS[r.s.status]}">● ${r.s.status}</span></div>
+    </div>`).join('');
+  document.querySelectorAll('.row').forEach((el) => {
+    el.onclick = () => { selected = el.dataset.id; renderRows(); renderDetail(); };
+    el.onkeydown = (e) => { if (e.key === 'Enter') el.click(); };
+  });
+}
+
+// ── Dossier ─────────────────────────────────────────────────
+function renderDetail() {
+  const r = rows.find((x) => x.id === selected), s = r.s;
+  const initials = r.name.split(' ').map((w) => w[0]).join('');
+  const contribs = Object.entries(r.c).map(([k, [pts, ev]]) => {
+    const bad = r.fraud && k === 'momo' ? r.fraud : 0;
+    return `<div class="contrib"><div><b>${LABELS[k]}</b><span>${ev}</span></div>
+      <span class="bar" style="height:8px"><i style="width:${(pts / 41) * 100}%;${bad ? `background:linear-gradient(90deg,var(--violet) ${((pts - bad) / pts) * 100}%,var(--alert) 0)` : ''}"></i></span>
+      <span class="pts ${bad ? 'alert' : ''}">+${pts}</span></div>`;
+  }).join('');
+  const why = r.fraud
+    ? `<p>Score gonflé : ${r.fraud} points viennent de flux circulaires. Dossier gelé en attente de revue.</p>`
+    : `<p>${r.strengths.join(' · ')}.</p>`;
+  const capPct = Math.min(100, (s.capacity / s.net) * 100);
+  const usePct = Math.min(100, (s.monthly / s.net) * 100);
+
+  document.getElementById('detail').innerHTML = `
+    <div class="dh"><span class="av">${initials}</span><div><b>${r.name}</b><span>${r.trade} · ${r.area} · ${r.dossier}</span></div></div>
+    <div class="dscore">
+      <div class="dial"><svg id="dd"></svg><div class="v"><b class="${r.fraud ? 'alert' : ''}">${r.score}</b><span>${r.fraud ? 'gelé' : 'sur 100'}</span></div></div>
+      <div>${r.fraud ? '<span class="chip alert">● Alerte fraude</span>' : `<span class="chip">● ${r.score >= 85 ? 'Très bon profil' : r.score >= 70 ? 'Bon profil' : 'À consolider'}</span>`}${why}</div>
+    </div>
+
+    <p class="h3">Pourquoi ce score<span class="faint" style="font-weight:400;font-size:11px">contributions en points</span></p>
+    ${contribs}
+
+    <p class="h3">Solvabilité<span class="faint" style="font-weight:400;font-size:11px">par mois · FCFA<span class="sim">sim.</span></span></p>
+    ${r.fraud
+      ? `<div class="flowcheck bad"><span>⚠</span><span>Les sorties vers les comptes A et B reviennent au commerçant : les revenus ne peuvent pas être évalués tant que le cycle n’est pas expliqué.</span></div>`
+      : `<dl class="money">
+          <dt>Revenus estimés</dt><dd>${fmt(r.rev)}</dd>
+          ${r.charges.map(([k, v]) => `<dt>− ${k}</dt><dd>${fmt(v)}</dd>`).join('')}
+          <dt class="tot">Revenu net</dt><dd class="tot">${fmt(s.net)}</dd>
+        </dl>
+        <div class="gauge">
+          <div class="track"><span class="cap" style="width:${capPct}%"></span><span class="use" style="width:${usePct}%"></span></div>
+          <div class="legend"><span><b style="color:var(--violet-deep)">${fmt(s.monthly)}</b> mensualité · ${Math.round(s.effort * 100)} % du net</span><span>capacité ${fmt(s.capacity)}</span></div>
+        </div>
+        <div class="flowcheck"><span class="violet">✓</span><span>Analyse des flux sur 30 jours : aucun flux circulaire détecté.</span></div>`}
+
+    <div class="offer">
+      <span class="btn primary" ${s.status === 'Éligible' ? '' : 'disabled'}>${s.status === 'Éligible' ? `Proposer ${fmt(s.loan)} FCFA` : s.status === 'Gelé' ? 'Offre suspendue' : 'Revue manuelle'}</span>
+      <span class="btn ghost">Exporter PDF</span>
+    </div>`;
+  drawDial(document.getElementById('dd'), r.score, { size: 112, tainted: r.fraud || 0 });
+}
+
+renderRows();
+renderDetail();
+</script>
+</body>
+</html>

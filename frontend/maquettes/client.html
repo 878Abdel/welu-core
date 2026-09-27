@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Wëlu — Maquette app client</title>
+<link rel="stylesheet" href="theme.css" />
+<style>
+  body { background: var(--surface); }
+  .top { display: flex; justify-content: space-between; align-items: center; padding: 14px 28px; border-bottom: 1px solid var(--line); background: var(--bg); }
+  .brand { font-weight: 700; font-size: 16px; letter-spacing: -.01em; }
+  .brand span { margin-left: 12px; font-weight: 400; font-size: 12.5px; color: var(--muted); }
+  .top a { font-size: 12.5px; color: var(--muted); }
+  .top a:hover { color: var(--violet-strong); }
+  .stage .iphone { width: 318px; height: 665px; }
+  .stage { display: flex; gap: 26px; justify-content: center; align-items: flex-start; padding: 28px 16px 40px; flex-wrap: wrap; }
+  .shot { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .shot > p { font-size: 12px; color: var(--muted); }
+  .shot > p b { color: var(--ink); font-weight: 600; margin-right: 6px; }
+
+  /* ── Contenu de l'app ───────────────────── */
+  .scroll { flex: 1; min-height: 0; overflow-y: auto; padding: 4px 18px 96px; scrollbar-width: none; }
+  .scroll::-webkit-scrollbar { display: none; }
+  .hello { display: flex; justify-content: space-between; align-items: center; padding: 8px 0 14px; }
+  .hello h1 { font-size: 20px; font-weight: 600; letter-spacing: -.02em; }
+  .hello p { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .avatar { width: 38px; height: 38px; border-radius: 50%; background: var(--tint); color: var(--violet-deep);
+    display: grid; place-items: center; font-weight: 600; font-size: 13px; }
+
+  .score { padding: 14px; display: grid; grid-template-columns: 104px 1fr; gap: 12px; align-items: center; }
+  .dial { position: relative; width: 104px; height: 104px; }
+  .dial svg { position: absolute; inset: 0; }
+  .dial .v { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .dial .v b { font-size: 30px; font-weight: 600; letter-spacing: -.03em; line-height: 1; }
+  .dial .v span { font-size: 9.5px; color: var(--muted); margin-top: 3px; }
+  .score h2 { font-size: 13px; font-weight: 600; }
+  .score .lvl { margin-top: 6px; }
+  .score .delta { font-size: 11px; color: var(--muted); margin-top: 8px; }
+  .house { border-top: 1px solid var(--line); margin: 0 -14px -14px; padding: 10px 14px 12px; grid-column: 1 / -1;
+    display: grid; grid-template-columns: 1fr 110px; align-items: end; gap: 10px; }
+  .house p { font-size: 11.5px; line-height: 1.45; color: var(--muted); }
+  .house p b { color: var(--ink); font-weight: 600; }
+
+  .loan { margin-top: 12px; padding: 14px; background: var(--violet-strong); color: #fff; border: 0; border-radius: 18px; }
+  .loan .eyebrow { color: rgba(255,255,255,.7); }
+  .loan .amt { font-size: 24px; font-weight: 600; letter-spacing: -.02em; margin-top: 6px; }
+  .loan .terms { font-size: 11.5px; opacity: .8; margin-top: 2px; }
+  .loan .row { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; }
+  .loan .btn { height: 32px; background: #fff; color: var(--violet-deep); font-size: 12px; }
+  .loan .sim { color: rgba(255,255,255,.6); }
+
+  .advice { margin-top: 12px; padding: 14px; }
+  .advice .head { display: flex; justify-content: space-between; align-items: center; }
+  .advice .head span:first-child { display: inline-flex; gap: 6px; align-items: center; font-size: 12px; font-weight: 600; color: var(--violet-deep); }
+  .advice p { margin-top: 8px; font-size: 12.5px; line-height: 1.5; }
+  .advice .act { margin-top: 10px; display: flex; gap: 8px; }
+  .advice .act .btn { height: 28px; font-size: 11.5px; padding: 0 10px; border-radius: 9px; }
+
+  .section { display: flex; justify-content: space-between; align-items: baseline; margin: 18px 0 6px; }
+  .section h3 { font-size: 14px; font-weight: 600; }
+  .section a { font-size: 12px; color: var(--violet-strong); font-weight: 500; }
+  .tx { display: grid; grid-template-columns: 34px 1fr auto; gap: 10px; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--line); }
+  .tx:last-child { border-bottom: 0; }
+  .tx .ic { width: 34px; height: 34px; border-radius: 10px; background: var(--surface); border: 1px solid var(--line); display: grid; place-items: center; }
+  .tx .l b { display: block; font-size: 12.5px; font-weight: 500; }
+  .tx .l span { font-size: 10.5px; color: var(--muted); }
+  .tx .a { text-align: right; font-size: 12.5px; font-weight: 600; }
+  .tx .a span { display: block; font-size: 10px; font-weight: 400; color: var(--muted); }
+  .tx .a.out { color: var(--muted); }
+
+  /* Barre d'onglets */
+  .tabs { position: absolute; left: 0; right: 0; bottom: 0; height: 84px; background: var(--bg); border-top: 1px solid var(--line);
+    display: grid; grid-template-columns: repeat(5, 1fr); align-items: start; padding: 10px 8px 0; z-index: 4; }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 9.5px; color: var(--faint); font-weight: 500; }
+  .tab.on { color: var(--violet-strong); }
+  .tab.qr { margin-top: -22px; }
+  .tab.qr .fab { width: 52px; height: 52px; border-radius: 18px; background: var(--violet-strong); display: grid; place-items: center;
+    box-shadow: 0 10px 20px -8px rgba(108, 92, 231, .7); }
+
+  /* Écrans QR */
+  .qrhead { padding: 6px 18px 0; display: flex; align-items: center; justify-content: space-between; }
+  .qrhead h1 { font-size: 18px; font-weight: 600; letter-spacing: -.01em; }
+  .seg { margin: 14px 18px 0; display: grid; grid-template-columns: 1fr 1fr; background: var(--tint); border-radius: 12px; padding: 3px; }
+  .seg span { text-align: center; font-size: 12.5px; font-weight: 500; padding: 7px 0; border-radius: 9px; color: var(--violet-deep); }
+  .seg span.on { background: var(--bg); box-shadow: 0 1px 3px rgba(27,21,48,.1); font-weight: 600; }
+  .qrcard { margin: 14px 18px 0; padding: 14px; text-align: center; }
+  .qrcard .who { font-size: 13px; font-weight: 600; }
+  .qrcard .id { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .qrbox { margin: 12px auto 0; width: 172px; height: 172px; padding: 12px; border-radius: 18px; background: var(--bg); border: 1px solid var(--line); position: relative; }
+  .qrbox .logo { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 38px; height: 38px; border-radius: 10px;
+    background: var(--violet-strong); color: #fff; font-weight: 700; font-size: 14px; display: grid; place-items: center; border: 4px solid #fff; }
+  .qrcard .how { margin-top: 14px; font-size: 12px; line-height: 1.5; color: var(--muted); }
+  .qrcard .how b { color: var(--ink); font-weight: 600; }
+  .qrfoot { margin: 14px 18px 0; display: flex; gap: 8px; }
+  .qrfoot .btn { flex: 1; height: 36px; font-size: 12px; }
+  .scorebadge { margin: 12px 18px 0; display: flex; align-items: center; gap: 10px; padding: 10px 12px; }
+  .scorebadge .minis { flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%; border: 3px solid var(--violet-strong); display: grid; place-items: center; font-weight: 700; font-size: 14px; color: var(--violet-deep); background: var(--bg); }
+  .scorebadge p { font-size: 11.5px; color: var(--muted); line-height: 1.35; }
+
+  .viewfinder { margin: 14px 18px 0; height: 290px; border-radius: 22px; background: #16121f; position: relative; overflow: hidden; }
+  .viewfinder .frame { position: absolute; left: 50%; top: 46%; width: 190px; height: 190px; transform: translate(-50%, -50%); }
+  .viewfinder .frame i { position: absolute; width: 34px; height: 34px; border: 3px solid #fff; }
+  .viewfinder .frame i:nth-child(1) { left: 0; top: 0; border-right: 0; border-bottom: 0; border-radius: 12px 0 0 0; }
+  .viewfinder .frame i:nth-child(2) { right: 0; top: 0; border-left: 0; border-bottom: 0; border-radius: 0 12px 0 0; }
+  .viewfinder .frame i:nth-child(3) { left: 0; bottom: 0; border-right: 0; border-top: 0; border-radius: 0 0 0 12px; }
+  .viewfinder .frame i:nth-child(4) { right: 0; bottom: 0; border-left: 0; border-top: 0; border-radius: 0 0 12px 0; }
+  .viewfinder .frame .ghost { position: absolute; inset: 26px; width: 138px; height: 138px; opacity: .25; }
+  .viewfinder .laser { position: absolute; left: 22px; right: 22px; top: 50%; height: 2px; background: var(--violet); box-shadow: 0 0 12px 2px rgba(165,148,249,.8); }
+  .viewfinder .hint { position: absolute; bottom: 16px; left: 0; right: 0; text-align: center; font-size: 12px; color: #fff; opacity: .85; }
+  .detect { margin: 12px 18px 0; padding: 12px; display: grid; grid-template-columns: 34px 1fr auto; gap: 10px; align-items: center; }
+  .detect .ic { width: 34px; height: 34px; border-radius: 10px; background: var(--tint); display: grid; place-items: center; }
+  .detect b { font-size: 12.5px; font-weight: 600; display: block; }
+  .detect span { font-size: 11px; color: var(--muted); }
+</style>
+</head>
+<body>
+  <div class="top">
+    <div class="brand">Wëlu<span>App client · mobile</span></div>
+    <a href="landing.html">← Retour à l’accueil</a>
+  </div>
+
+  <div class="stage">
+    <!-- 1. ACCUEIL -->
+    <div class="shot">
+      <div class="iphone">
+        <i class="sidebtn a"></i><i class="sidebtn b"></i><i class="sidebtn c"></i><i class="sidebtn d"></i><i class="sidebtn e"></i>
+        <div class="bezel"><div class="screen">
+          <div class="island"></div>
+          <div class="statusbar"><span>9:41</span><span class="icons">
+            <svg width="17" height="11" viewBox="0 0 17 11"><rect x="0" y="7" width="3" height="4" rx="1" fill="#1b1530"/><rect x="4.5" y="5" width="3" height="6" rx="1" fill="#1b1530"/><rect x="9" y="2.5" width="3" height="8.5" rx="1" fill="#1b1530"/><rect x="13.5" y="0" width="3" height="11" rx="1" fill="#1b1530"/></svg>
+            <svg width="25" height="12" viewBox="0 0 25 12"><rect x=".5" y=".5" width="21" height="11" rx="3" fill="none" stroke="#1b1530" opacity=".4"/><rect x="2" y="2" width="16" height="8" rx="1.8" fill="#1b1530"/><rect x="23" y="4" width="1.6" height="4" rx=".8" fill="#1b1530" opacity=".4"/></svg>
+          </span></div>
+
+          <div class="scroll">
+            <div class="hello">
+              <div><h1>Bonjour Awa</h1><p>Vente de tissus · Sandaga</p></div>
+              <div class="avatar">AD</div>
+            </div>
+
+            <div class="card score">
+              <div class="dial"><svg data-dial="91" data-size="104"></svg><div class="v"><b>91</b><span>sur 100</span></div></div>
+              <div>
+                <h2>Score de crédibilité</h2>
+                <div class="lvl"><span class="chip">● Très bon profil</span></div>
+                <p class="delta"><span class="violet">▲ +4</span> ce mois-ci<span class="sim">sim.</span></p>
+              </div>
+              <div class="house">
+                <p><b>Ma maison · le toit est en cours.</b><br />Encore 4 points pour la terminer.</p>
+                <svg data-house="91" width="110"></svg>
+              </div>
+            </div>
+
+            <div class="card loan">
+              <p class="eyebrow">Prêt disponible</p>
+              <p class="amt">750 000 FCFA</p>
+              <p class="terms">Sur 6 mois · ≈ 131 000 FCFA / mois<span class="sim">sim.</span></p>
+              <div class="row"><span style="font-size:11px;opacity:.8">Proposé par une banque partenaire</span><span class="btn">Voir l’offre</span></div>
+            </div>
+
+            <div class="card tint advice">
+              <div class="head">
+                <span><svg width="14" height="14" viewBox="0 0 14 14"><path d="M7 0l1.6 4.4L13 6l-4.4 1.6L7 12l-1.6-4.4L1 6l4.4-1.6z" fill="#6c5ce7"/></svg>Conseil IA</span>
+                <span class="sim">généré · simulé</span>
+              </div>
+              <p>Le samedi est votre meilleur jour, mais seules 4 ventes sur 10 y sont confirmées. Faites scanner votre QR à chaque vente : c’est ce qui fera le plus monter votre score.</p>
+              <div class="act"><span class="btn primary">Afficher mon QR</span><span class="btn ghost">Plus tard</span></div>
+            </div>
+
+            <div class="section"><h3>Dernières transactions</h3><a href="#">Tout voir</a></div>
+            <div>
+              <div class="tx"><span class="ic"><svg width="14" height="14" viewBox="0 0 14 14"><path d="M2 7h10M7 2v10" stroke="#6c5ce7" stroke-width="1.6" stroke-linecap="round"/></svg></span>
+                <span class="l"><b>Wax hollandais · 6 yards</b><span>Cash · confirmé par QR</span></span><span class="a">+18 000<span>11:02</span></span></div>
+              <div class="tx"><span class="ic"><svg width="14" height="14" viewBox="0 0 14 14"><path d="M2 7h10M7 2v10" stroke="#6c5ce7" stroke-width="1.6" stroke-linecap="round"/></svg></span>
+                <span class="l"><b>Bazin brodé · 3 m</b><span>Mobile money</span></span><span class="a">+15 000<span>10:31</span></span></div>
+              <div class="tx"><span class="ic"><svg width="14" height="14" viewBox="0 0 14 14"><path d="M2 7h10" stroke="#a6a1b8" stroke-width="1.6" stroke-linecap="round"/></svg></span>
+                <span class="l"><b>Grossiste tissus</b><span>Paiement fournisseur</span></span><span class="a out">−305 000<span>Hier</span></span></div>
+              <div class="tx"><span class="ic"><svg width="14" height="14" viewBox="0 0 14 14"><path d="M8 1L3 8h4l-1 5 5-7H7z" fill="#a6a1b8"/></svg></span>
+                <span class="l"><b>Recharge électricité</b><span>Compteur prépayé</span></span><span class="a out">−10 000<span>Lun.</span></span></div>
+            </div>
+          </div>
+
+          <nav class="tabs">
+            <span class="tab on"><svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 9l7-6 7 6v8H3z" fill="currentColor"/></svg>Accueil</span>
+            <span class="tab"><svg width="20" height="20" viewBox="0 0 20 20"><path d="M4 5h12M4 10h12M4 15h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Historique</span>
+            <span class="tab qr"><span class="fab"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#fff" stroke-width="2"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="13" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="13" width="7" height="7" rx="1.5"/><path d="M13 13h3v3M20 13v7h-4M13 17v3"/></svg></span>QR</span>
+            <span class="tab"><svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="5" width="14" height="11" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3 9h14" stroke="currentColor" stroke-width="1.8"/></svg>Prêts</span>
+            <span class="tab"><svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="7" r="3.5" fill="currentColor"/><path d="M3 17c1.5-3.5 4-5 7-5s5.5 1.5 7 5" fill="currentColor"/></svg>Profil</span>
+          </nav>
+          <span class="homebar"></span>
+        </div></div>
+      </div>
+      <p><b>1 · Accueil</b>score, maison, prêt, conseil, historique</p>
+    </div>
+
+    <!-- 2. MON QR -->
+    <div class="shot">
+      <div class="iphone">
+        <i class="sidebtn a"></i><i class="sidebtn b"></i><i class="sidebtn c"></i><i class="sidebtn d"></i><i class="sidebtn e"></i>
+        <div class="bezel"><div class="screen">
+          <div class="island"></div>
+          <div class="statusbar"><span>9:41</span><span></span></div>
+          <div class="qrhead"><h1>QR Wëlu</h1><span class="avatar" style="width:32px;height:32px;font-size:11px">AD</span></div>
+          <div class="seg"><span class="on">Mon QR</span><span>Scanner</span></div>
+          <div class="card qrcard">
+            <p class="who">Awa Diop · Tissus Sandaga</p>
+            <p class="id">Commerçant n° WL-0412</p>
+            <div class="qrbox"><svg data-qr="412" width="148" height="148"></svg><span class="logo">W</span></div>
+            <p class="how">Votre client scanne ce code pour <b>confirmer son achat</b>. La vente devient certifiée et compte pour votre score.</p>
+          </div>
+          <div class="card tint scorebadge">
+            <span class="minis">91</span>
+            <div><p>Présentez aussi ce QR à votre banque : il partage votre score, avec votre accord.</p></div>
+          </div>
+          <div class="qrfoot"><span class="btn soft">Partager</span><span class="btn soft">Enregistrer</span></div>
+          <span class="homebar"></span>
+        </div></div>
+      </div>
+      <p><b>2 · Afficher</b>le client scanne pour certifier la vente</p>
+    </div>
+
+    <!-- 3. SCANNER -->
+    <div class="shot">
+      <div class="iphone">
+        <i class="sidebtn a"></i><i class="sidebtn b"></i><i class="sidebtn c"></i><i class="sidebtn d"></i><i class="sidebtn e"></i>
+        <div class="bezel"><div class="screen">
+          <div class="island"></div>
+          <div class="statusbar"><span>9:41</span><span></span></div>
+          <div class="qrhead"><h1>QR Wëlu</h1><span class="avatar" style="width:32px;height:32px;font-size:11px">AD</span></div>
+          <div class="seg"><span>Mon QR</span><span class="on">Scanner</span></div>
+          <div class="viewfinder">
+            <div class="frame"><i></i><i></i><i></i><i></i><svg class="ghost" data-qr="77" data-color="#ffffff"></svg></div>
+            <div class="laser"></div>
+            <p class="hint">Placez le QR dans le cadre</p>
+          </div>
+          <div class="card detect">
+            <span class="ic"><svg width="16" height="16" viewBox="0 0 16 16"><path d="M3 8.5l3 3 7-7" stroke="#6c5ce7" stroke-width="2" fill="none" stroke-linecap="round"/></svg></span>
+            <div><b>Grossiste tissus · Colobane</b><span>Paiement de 305 000 FCFA détecté</span></div>
+            <span class="btn primary" style="height:30px;font-size:11.5px;padding:0 10px">Valider</span>
+          </div>
+          <p style="margin:10px 18px 0;font-size:11px;color:var(--muted);line-height:1.45">Scannez le QR d’un fournisseur ou d’un client pour enregistrer un paiement dans votre historique.</p>
+          <span class="homebar"></span>
+        </div></div>
+      </div>
+      <p><b>3 · Scanner</b>enregistrer un paiement fournisseur</p>
+    </div>
+  </div>
+
+  <span class="mock-note">Maquette statique · données simulées</span>
+  <script type="module">
+    import { drawAll } from './ui.js';
+    // Deuxième vue de l'accueil, défilée jusqu'en bas : conseil IA et dernières transactions.
+    const first = document.querySelector('.shot');
+    const copy = first.cloneNode(true);
+    copy.querySelector('.shot > p').innerHTML = '<b>1 bis · Accueil (défilé)</b>conseil IA, dernières transactions';
+    first.after(copy);
+    drawAll();
+    const sc = copy.querySelector('.scroll');
+    sc.scrollTop = sc.scrollHeight;
+  </script>
+</body>
+</html>
