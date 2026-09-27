@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+xgboost
+scikit-learn
+networkx
+fpdf2
+pandas
+numpy
+torch
